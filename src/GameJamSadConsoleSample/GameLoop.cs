@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using SadConsole;
 using Console = SadConsole.Console;
 using Microsoft.Xna.Framework;
+using System.Linq;
 
 namespace GameJamSadConsoleSample
 {
@@ -65,6 +66,8 @@ namespace GameJamSadConsoleSample
             map = new Map();
             intro = new Intro();
             _endGame = new EndGame();
+
+            ColoredRegion.CreateAll();
 
             playerMapPosition = new Point(9, 5);
         }
@@ -339,14 +342,54 @@ namespace GameJamSadConsoleSample
             RenderPlayer();
         }
 
+        public class ColoredRegion
+        {
+            public Rectangle Rectangle;
+            public Color Color;
+
+            public static List<ColoredRegion> Regions;
+
+            public static void CreateAll()
+            {
+                var temp = new List<ColoredRegion>();
+
+                var lipStickRegion = new ColoredRegion { Rectangle = new Rectangle(49, 5, 13, 9), Color = Color.MediumVioletRed };
+                var shoeRegion = new ColoredRegion { Rectangle = new Rectangle(117, 5, 19, 7), Color = Color.HotPink };
+                var pantsRegion = new ColoredRegion { Rectangle = new Rectangle(9, 35, 14, 7), Color = Color.Goldenrod };
+                var braRegion = new ColoredRegion { Rectangle = new Rectangle(61, 33, 21, 9), Color = Color.Purple };
+                var ringRegion = new ColoredRegion { Rectangle = new Rectangle(121, 35, 14, 7), Color = Color.Gold };
+
+                temp.Add(lipStickRegion);
+                temp.Add(shoeRegion);
+                temp.Add(pantsRegion);
+                temp.Add(braRegion);
+                temp.Add(ringRegion);
+
+                Regions = temp;
+            }
+
+            public bool Contains(Point point) => Rectangle.Contains(point);
+        }
+
         private static void RenderGame()
         {
             for (int i = 0; i <= gameHeight; i++)
             {
                 if (i is >= 6 and <= 14)
                 {
+                    var color = Color.White;
+                    var region = ColoredRegion.Regions.FirstOrDefault(c => c.Contains(playerMapPosition));
+                    if (region != null)
+                        color = region.Color;
+
                     string line = map.GetLine(i - 8, playerMapPosition);
-                    gameConsole.Print(30, 4 + i, line, ColorAnsi.White);
+
+                    if (line.Contains("8"))
+                    {
+                        color = Color.SeaGreen;
+                    }
+
+                    gameConsole.Print(30, 4 + i, line, color);
                 }
             }
         }

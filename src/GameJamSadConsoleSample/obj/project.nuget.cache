@@ -1,12 +1,12 @@
 {
   "version": 2,
-  "dgSpecHash": "FYa6cnn43WYhLQ2GMWOVevj8xhfeb6w1QOKr6lagLI24YU44BpPYraj8TmgKgda3VomVwan11y22Dsud2tyYAA==",
+  "dgSpecHash": "YN5jv8TueC4s/GohywH0aK+diB7pq2T6yhndVY+Ix9HqVMhxHMvPBG5jNgZZNg3pyhCT0oltg5IPPg4jezY5QA==",
   "success": true,
-  "projectFilePath": "/Users/otjorfald/Dev/Game.Jam/Project/src/GameJamSadConsoleSample/GameJamSadConsoleSample.csproj",
+  "projectFilePath": "/Users/olaf/Documents/Projects/ALonelyPoetsQuest/src/GameJamSadConsoleSample/GameJamSadConsoleSample.csproj",
   "expectedPackageFiles": [
-    "/Users/otjorfald/.nuget/packages/monogame.framework.desktopgl/3.8.0.1641/monogame.framework.desktopgl.3.8.0.1641.nupkg.sha512",
-    "/Users/otjorfald/.nuget/packages/newtonsoft.json/11.0.2/newtonsoft.json.11.0.2.nupkg.sha512",
-    "/Users/otjorfald/.nuget/packages/sadconsole/8.99.3/sadconsole.8.99.3.nupkg.sha512"
+    "/Users/olaf/.nuget/packages/monogame.framework.desktopgl/3.8.0.1641/monogame.framework.desktopgl.3.8.0.1641.nupkg.sha512",
+    "/Users/olaf/.nuget/packages/newtonsoft.json/11.0.2/newtonsoft.json.11.0.2.nupkg.sha512",
+    "/Users/olaf/.nuget/packages/sadconsole/8.99.3/sadconsole.8.99.3.nupkg.sha512"
   ],
   "logs": []
 }
