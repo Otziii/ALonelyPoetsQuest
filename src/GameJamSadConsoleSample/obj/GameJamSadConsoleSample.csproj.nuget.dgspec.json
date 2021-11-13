@@ -1,29 +1,30 @@
 {
   "format": 1,
   "restore": {
-    "/Users/otjorfald/Dev/Game.Jam/Project/src/GameJamSadConsoleSample/GameJamSadConsoleSample.csproj": {}
+    "/Users/olaf/Documents/Projects/ALonelyPoetsQuest/src/GameJamSadConsoleSample/GameJamSadConsoleSample.csproj": {}
   },
   "projects": {
-    "/Users/otjorfald/Dev/Game.Jam/Project/src/GameJamSadConsoleSample/GameJamSadConsoleSample.csproj": {
+    "/Users/olaf/Documents/Projects/ALonelyPoetsQuest/src/GameJamSadConsoleSample/GameJamSadConsoleSample.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "/Users/otjorfald/Dev/Game.Jam/Project/src/GameJamSadConsoleSample/GameJamSadConsoleSample.csproj",
+        "projectUniqueName": "/Users/olaf/Documents/Projects/ALonelyPoetsQuest/src/GameJamSadConsoleSample/GameJamSadConsoleSample.csproj",
         "projectName": "GameJamSadConsoleSample",
-        "projectPath": "/Users/otjorfald/Dev/Game.Jam/Project/src/GameJamSadConsoleSample/GameJamSadConsoleSample.csproj",
-        "packagesPath": "/Users/otjorfald/.nuget/packages/",
-        "outputPath": "/Users/otjorfald/Dev/Game.Jam/Project/src/GameJamSadConsoleSample/obj/",
+        "projectPath": "/Users/olaf/Documents/Projects/ALonelyPoetsQuest/src/GameJamSadConsoleSample/GameJamSadConsoleSample.csproj",
+        "packagesPath": "/Users/olaf/.nuget/packages/",
+        "outputPath": "/Users/olaf/Documents/Projects/ALonelyPoetsQuest/src/GameJamSadConsoleSample/obj/",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "/usr/local/share/dotnet/sdk/NuGetFallbackFolder"
         ],
         "configFilePaths": [
-          "/Users/otjorfald/.nuget/NuGet/NuGet.Config"
+          "/Users/olaf/.config/NuGet/NuGet.Config"
         ],
         "originalTargetFrameworks": [
           "net5.0"
         ],
         "sources": {
-          "https://api.nuget.org/v3/index.json": {}
+          "https://api.nuget.org/v3/index.json": {},
+          "https://nuget.pkg.github.com/stho01/index.json": {}
         },
         "frameworks": {
           "net5.0": {
