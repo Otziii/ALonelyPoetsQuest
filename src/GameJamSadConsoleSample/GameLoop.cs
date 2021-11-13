@@ -12,7 +12,7 @@ namespace GameJamSadConsoleSample
         private const int Height = 30;
         private const int gameWidth = 75;
         private const int gameHeight = 29;
-        private static int battery = 1;
+        private static int battery = 4;
         private static List<string> itemList = new();
         private static DateTime startOfGame;
         private static int playerStartX = 3;
@@ -37,9 +37,14 @@ namespace GameJamSadConsoleSample
 
         private static string[] howToPlayList =
         {
-            "- Navigate the dark, tight cave of Uranus to find Jazz' missing items.",
-            "- You move PW3 around with the arrow keys.",
+            "- Navigate the dark, tight cave of Uranus to find your",
+            "    Venusian lover's missing items.",
+            "- You move Patrick William the Third around with the arrow keys.",
             "- Pick up power-tokens '8' to fill up the flashlight battery.",
+            "",
+            "",
+            "Your goal: Pick up all the items and get back to the ship 'S'",
+            "before your flashlight battery runs out."
         };
 
         private static int selectedMenuItem;
@@ -66,7 +71,9 @@ namespace GameJamSadConsoleSample
 
         private static void Update(GameTime time)
         {
+            fullHudConsole.Clear();
             fullHudConsole.Children.Clear();
+            gameConsole.Clear();
 
             switch (gameState)
             {
@@ -284,7 +291,7 @@ namespace GameJamSadConsoleSample
 
         private static void RenderHud()
         {
-            if (steps == 100)
+            if (steps == 150)
             {
                 steps = 0;
                 battery--;
@@ -336,7 +343,7 @@ namespace GameJamSadConsoleSample
         {
             for (int i = 0; i <= gameHeight; i++)
             {
-                if (i is >= 7 and <= 13)
+                if (i is >= 6 and <= 14)
                 {
                     string line = map.GetLine(i - 8, playerMapPosition);
                     gameConsole.Print(30, 4 + i, line, ColorAnsi.White);
@@ -352,7 +359,11 @@ namespace GameJamSadConsoleSample
         private static void RenderMenu()
         {
             var welcome = "Welcome to A Lonely Poet's Quest";
-            fullHudConsole.Print(GetXForText(welcome), 1, welcome, ColorAnsi.CyanBright);
+            fullHudConsole.Print(GetXForText(welcome), 1, welcome, ColorAnsi.White);
+            
+            fullHudConsole.Print(0, 2, "", ColorAnsi.CyanBright);
+            fullHudConsole.Print(0, 3, "", ColorAnsi.CyanBright);
+            fullHudConsole.Print(0, 4, "", ColorAnsi.CyanBright);
 
             for (int i = 0; i < menuList.Length; i++)
             {
@@ -367,19 +378,19 @@ namespace GameJamSadConsoleSample
                     menuText = menuItem;
                 }
 
-                fullHudConsole.Print(GetXForText(menuText), i + 5, menuText, ColorAnsi.Magenta);
+                fullHudConsole.Print(GetXForText(menuText), i + 7, menuText, ColorAnsi.Magenta);
             }
         }
 
         private static void RenderHowToPlay()
         {
             var howToPlay = "How to play A Lonely Poet's Quest";
-            fullHudConsole.Print(GetXForText(howToPlay), 1, howToPlay, ColorAnsi.CyanBright);
+            fullHudConsole.Print(GetXForText(howToPlay), 1, howToPlay, ColorAnsi.White);
 
             for (int i = 0; i < howToPlayList.Length; i++)
             {
                 var howText = howToPlayList[i];
-                fullHudConsole.Print(Width / 2 - 20, i + 10, howText, ColorAnsi.CyanBright);
+                fullHudConsole.Print(10, i + 10, howText, ColorAnsi.CyanBright);
             }
 
             var ok = "--- OK ---";
@@ -390,7 +401,6 @@ namespace GameJamSadConsoleSample
 
         private static void RenderIntro()
         {
-            fullHudConsole.Clear();
             for (int i = 0; i < intro.intro[introSteps].Count; i++)
             {
                 var line = intro.intro[introSteps][i];
@@ -400,8 +410,6 @@ namespace GameJamSadConsoleSample
 
         private static void RenderGameOver()
         {
-            fullHudConsole.Clear();
-            gameConsole.Clear();
             for (int i = 0; i < _endGame.gameOver.Count; i++)
             {
                 var line = _endGame.gameOver[i];
@@ -414,8 +422,6 @@ namespace GameJamSadConsoleSample
 
         private static void RenderGameCompleted()
         {
-            fullHudConsole.Clear();
-            gameConsole.Clear();
             for (int i = 0; i < _endGame.gameCompleted.Count; i++)
             {
                 var line = _endGame.gameCompleted[i];

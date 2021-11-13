@@ -7,4 +7,4 @@ build_property.PublishSingleFile =
 build_property.IncludeAllContentForSelfExtract = 
 build_property._SupportedPlatformList = Android,iOS,Linux,macOS,Windows
 build_property.RootNamespace = GameJamSadConsoleSample
-build_property.ProjectDir = /Users/otjorfald/Dev/Game.Jam/fagheldag-20211114-game-jam-sadconsole-sample-main/src/GameJamSadConsoleSample/
+build_property.ProjectDir = /Users/otjorfald/Dev/Game.Jam/Project/src/GameJamSadConsoleSample/

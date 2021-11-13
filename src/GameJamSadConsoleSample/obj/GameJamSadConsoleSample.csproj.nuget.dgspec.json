@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "/Users/otjorfald/Dev/Game.Jam/fagheldag-20211114-game-jam-sadconsole-sample-main/src/GameJamSadConsoleSample/GameJamSadConsoleSample.csproj": {}
+    "/Users/otjorfald/Dev/Game.Jam/Project/src/GameJamSadConsoleSample/GameJamSadConsoleSample.csproj": {}
   },
   "projects": {
-    "/Users/otjorfald/Dev/Game.Jam/fagheldag-20211114-game-jam-sadconsole-sample-main/src/GameJamSadConsoleSample/GameJamSadConsoleSample.csproj": {
+    "/Users/otjorfald/Dev/Game.Jam/Project/src/GameJamSadConsoleSample/GameJamSadConsoleSample.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "/Users/otjorfald/Dev/Game.Jam/fagheldag-20211114-game-jam-sadconsole-sample-main/src/GameJamSadConsoleSample/GameJamSadConsoleSample.csproj",
+        "projectUniqueName": "/Users/otjorfald/Dev/Game.Jam/Project/src/GameJamSadConsoleSample/GameJamSadConsoleSample.csproj",
         "projectName": "GameJamSadConsoleSample",
-        "projectPath": "/Users/otjorfald/Dev/Game.Jam/fagheldag-20211114-game-jam-sadconsole-sample-main/src/GameJamSadConsoleSample/GameJamSadConsoleSample.csproj",
+        "projectPath": "/Users/otjorfald/Dev/Game.Jam/Project/src/GameJamSadConsoleSample/GameJamSadConsoleSample.csproj",
         "packagesPath": "/Users/otjorfald/.nuget/packages/",
-        "outputPath": "/Users/otjorfald/Dev/Game.Jam/fagheldag-20211114-game-jam-sadconsole-sample-main/src/GameJamSadConsoleSample/obj/",
+        "outputPath": "/Users/otjorfald/Dev/Game.Jam/Project/src/GameJamSadConsoleSample/obj/",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "/usr/local/share/dotnet/sdk/NuGetFallbackFolder"
