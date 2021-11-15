@@ -1,22 +1,33 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using SadConsole;
 using Console = SadConsole.Console;
 using Microsoft.Xna.Framework;
 
 namespace GameJamSadConsoleSample
 {
-    public class GameLoop
+    internal enum GameState
     {
+        Intro = 0,
+        HowToPlay = 1,
+        Menu = 2,
+        PlayGame = 3,
+        GameOver = 4,
+        Victory = 5
+    }
+
+    public static class GameLoop
+    {
+        private const int StepsBeforeBatteryGoesDown = 150;
         private const int Width = 91;
         private const int Height = 30;
-        private const int gameWidth = 75;
-        private const int gameHeight = 29;
-        private static int battery = 4;
-        private static List<string> itemList = new();
+        private const int GameWidth = 75;
+        private const int GameHeight = 29;
+
+        private static int currentBattery = 5;
+        private static readonly List<string> ItemList = new();
         private static DateTime startOfGame;
-        private static int playerStartX = 3;
-        private static int playerStartY = 1;
         private static Point playerMapPosition;
         private static int steps;
         private static int introSteps;
@@ -25,17 +36,17 @@ namespace GameJamSadConsoleSample
         private static HUD hud;
         private static Map map;
         private static Intro intro;
-        private static EndGame _endGame;
+        private static EndGame endGame;
 
-        private static Console fullHudConsole =
+        private static readonly Console FullHudConsole =
             new ScrollingConsole(Width, Height, Global.FontDefault, new Rectangle(0, 0, Width, Height));
 
-        private static Console gameConsole =
-            new ScrollingConsole(Width, Height, Global.FontDefault, new Rectangle(0, 0, gameWidth, gameHeight));
+        private static readonly Console GameConsole =
+            new ScrollingConsole(Width, Height, Global.FontDefault, new Rectangle(0, 0, GameWidth, GameHeight));
 
-        private static string[] menuList = { "START GAME", "HOW TO PLAY", "EXIT" };
+        private static readonly string[] MenuList = { "START GAME", "HOW TO PLAY", "EXIT" };
 
-        private static string[] howToPlayList =
+        private static readonly string[] HowToPlayList =
         {
             "- Navigate the dark, tight cave of Uranus to find your",
             "    Venusian lover's missing items.",
@@ -43,14 +54,14 @@ namespace GameJamSadConsoleSample
             "- Pick up power-tokens '8' to fill up the flashlight battery.",
             "",
             "",
-            "Your goal: Pick up all the items and get back to the ship 'S'",
+            "Your goal: Pick up all the items and get back to the Ship",
             "before your flashlight battery runs out."
         };
 
         private static int selectedMenuItem;
-        private static int gameState = 2;
+        private static GameState gameState = GameState.Menu;
 
-        private static void Main(string[] args)
+        private static void Main()
         {
             SadConsole.Game.Create(Width, Height);
             SadConsole.Game.OnInitialize = Init;
@@ -64,65 +75,50 @@ namespace GameJamSadConsoleSample
             hud = new HUD();
             map = new Map();
             intro = new Intro();
-            _endGame = new EndGame();
+            endGame = new EndGame();
 
             playerMapPosition = new Point(9, 5);
         }
 
         private static void Update(GameTime time)
         {
-            fullHudConsole.Clear();
-            fullHudConsole.Children.Clear();
-            gameConsole.Clear();
+            FullHudConsole.Clear();
+            FullHudConsole.Children.Clear();
+            GameConsole.Clear();
 
             switch (gameState)
             {
-                // Intro
-                case 0:
+                case GameState.Intro:
                     CheckIntroKeyboard();
                     RenderIntro();
                     break;
-                // How to play
-                case 1:
+                case GameState.HowToPlay:
                     CheckMenuKeyboard();
                     RenderHowToPlay();
                     break;
-                // Menu
-                case 2:
+                case GameState.Menu:
                     CheckMenuKeyboard();
                     RenderMenu();
                     break;
-                // Playing the game
-                case 3:
+                case GameState.PlayGame:
                     CheckPlayerKeyboard();
                     RenderHud();
                     break;
-                // Game Over
-                case 4:
-                    CheckEndKeyboard();
+                case GameState.GameOver:
+                    CheckMenuKeyboard();
                     RenderGameOver();
                     break;
-                // Game completed
-                case 5:
-                    CheckEndKeyboard();
+                case GameState.Victory:
+                    CheckMenuKeyboard();
                     RenderGameCompleted();
                     break;
             }
 
-            Global.CurrentScreen.Children.Add(gameConsole);
-            Global.CurrentScreen.Children.Add(fullHudConsole);
+            Global.CurrentScreen.Children.Add(GameConsole);
+            Global.CurrentScreen.Children.Add(FullHudConsole);
         }
 
         #region Keyboard
-
-        private static void CheckEndKeyboard()
-        {
-            if (Global.KeyboardState.IsKeyPressed(Microsoft.Xna.Framework.Input.Keys.Enter)
-                || Global.KeyboardState.IsKeyPressed(Microsoft.Xna.Framework.Input.Keys.Space))
-            {
-                gameState = 2;
-            }
-        }
 
         private static void CheckIntroKeyboard()
         {
@@ -133,7 +129,7 @@ namespace GameJamSadConsoleSample
                 if (introSteps > 3)
                 {
                     introSteps = 3;
-                    gameState = 3;
+                    gameState = GameState.PlayGame;
                 }
             }
         }
@@ -159,77 +155,12 @@ namespace GameJamSadConsoleSample
             {
                 UpdatePlayerPositionIfPossible(new Point(playerMapPosition.X + 1, playerMapPosition.Y));
             }
-        }
 
-        private static void UpdatePlayerPositionIfPossible(Point newPlayerPosition)
-        {
-            var line = map.mapList[newPlayerPosition.Y - 1];
-            var stepChar = line[newPlayerPosition.X];
-
-            switch (stepChar)
+            if (Global.KeyboardState.IsKeyPressed(Microsoft.Xna.Framework.Input.Keys.Escape))
             {
-                case '|' or '#' or '=' or '@':
-                    return;
-                case '8':
-                    battery = 4;
-                    break;
-                case 'S':
-                    if (itemList.Count == 5)
-                    {
-                        completedTime = DateTime.Now - startOfGame;
-                        gameState = 5;
-                    }
-
-                    break;
-                case '1':
-                    if (!itemList.Contains("1"))
-                    {
-                        itemList.Add("1");
-                        battery += 2;
-                    }
-
-                    break;
-                case '2':
-                    if (!itemList.Contains("2"))
-                    {
-                        itemList.Add("2");
-                        battery += 2;
-                    }
-
-                    break;
-                case '3':
-                    if (!itemList.Contains("3"))
-                    {
-                        itemList.Add("3");
-                        battery += 2;
-                    }
-
-                    break;
-                case '4':
-                    if (!itemList.Contains("4"))
-                    {
-                        itemList.Add("4");
-                        battery += 2;
-                    }
-
-                    break;
-                case '5':
-                    if (!itemList.Contains("5"))
-                    {
-                        itemList.Add("5");
-                        battery += 2;
-                    }
-
-                    break;
+                ResetGame();
+                gameState = GameState.Menu;
             }
-
-            if (battery > 4)
-            {
-                battery = 4;
-            }
-
-            playerMapPosition = newPlayerPosition;
-            steps++;
         }
 
         private static void CheckMenuKeyboard()
@@ -238,7 +169,7 @@ namespace GameJamSadConsoleSample
             {
                 if (selectedMenuItem == 0)
                 {
-                    selectedMenuItem = menuList.Length - 1;
+                    selectedMenuItem = MenuList.Length - 1;
                 }
                 else
                 {
@@ -248,7 +179,7 @@ namespace GameJamSadConsoleSample
 
             if (Global.KeyboardState.IsKeyPressed(Microsoft.Xna.Framework.Input.Keys.Down))
             {
-                if (selectedMenuItem == menuList.Length - 1)
+                if (selectedMenuItem == MenuList.Length - 1)
                 {
                     selectedMenuItem = 0;
                 }
@@ -263,23 +194,26 @@ namespace GameJamSadConsoleSample
             {
                 switch (gameState)
                 {
-                    case 1:
-                        gameState = 2;
+                    case GameState.HowToPlay:
+                    case GameState.GameOver:
+                    case GameState.Victory:
+                        gameState = GameState.Menu;
                         break;
-                    case 2:
+                    case GameState.Menu:
                         if (selectedMenuItem == 2)
                         {
                             Environment.Exit(1);
                         }
+                        else if (selectedMenuItem == 1)
+                        {
+                            gameState = GameState.HowToPlay;
+                        }
                         else
                         {
-                            gameState = selectedMenuItem;
-                            if (gameState == 0)
-                            {
-                                startOfGame = DateTime.Now;
-                            }
+                            ResetGame();
+                            startOfGame = DateTime.Now;
+                            gameState = GameState.Intro;
                         }
-
                         break;
                 }
             }
@@ -291,14 +225,15 @@ namespace GameJamSadConsoleSample
 
         private static void RenderHud()
         {
-            if (steps == 150)
+            if (steps == StepsBeforeBatteryGoesDown)
             {
                 steps = 0;
-                battery--;
+                currentBattery--;
 
-                if (battery == 0)
+                if (currentBattery == 0)
                 {
-                    gameState = 4;
+                    completedTime = DateTime.Now - startOfGame;
+                    gameState = GameState.GameOver;
                 }
             }
 
@@ -312,19 +247,19 @@ namespace GameJamSadConsoleSample
                 switch (i)
                 {
                     case 7:
-                        hudLine = hud.GetBatteryLine(4, battery);
+                        hudLine = hud.GetBatteryLine(4, currentBattery);
                         break;
                     case 8:
-                        hudLine = hud.GetBatteryLine(3, battery);
+                        hudLine = hud.GetBatteryLine(3, currentBattery);
                         break;
                     case 9:
-                        hudLine = hud.GetBatteryLine(2, battery);
+                        hudLine = hud.GetBatteryLine(2, currentBattery);
                         break;
                     case 10:
-                        hudLine = hud.GetBatteryLine(1, battery);
+                        hudLine = hud.GetBatteryLine(1, currentBattery);
                         break;
                     case 19:
-                        hudLine = hud.GetItemsLine(itemList.Count);
+                        hudLine = hud.GetItemsLine(ItemList.Count);
                         break;
                     case 26:
                         var time = DateTime.Now - startOfGame;
@@ -332,7 +267,7 @@ namespace GameJamSadConsoleSample
                         break;
                 }
 
-                fullHudConsole.Print(GetXForText(hudLine), i, hudLine, ColorAnsi.CyanBright);
+                FullHudConsole.Print(GetXForCenterText(hudLine), i, hudLine, ColorAnsi.CyanBright);
             }
 
             RenderGame();
@@ -341,34 +276,36 @@ namespace GameJamSadConsoleSample
 
         private static void RenderGame()
         {
-            for (int i = 0; i <= gameHeight; i++)
+            for (var i = 0; i <= GameHeight; i++)
             {
                 if (i is >= 6 and <= 14)
                 {
-                    string line = map.GetLine(i - 8, playerMapPosition);
-                    gameConsole.Print(30, 4 + i, line, ColorAnsi.White);
+                    var line = map.GetLine(i - 8, playerMapPosition);
+                    GameConsole.Print(30, 4 + i, line, ColorAnsi.White);
+
+                    PrintItemForLine(line, i);
                 }
             }
         }
 
         private static void RenderPlayer()
         {
-            gameConsole.Print(gameWidth / 2, gameHeight / 2, "W", ColorAnsi.YellowBright);
+            GameConsole.Print(GameWidth / 2, GameHeight / 2, "W", ColorAnsi.YellowBright);
         }
 
         private static void RenderMenu()
         {
             var welcome = "Welcome to A Lonely Poet's Quest";
-            fullHudConsole.Print(GetXForText(welcome), 1, welcome, ColorAnsi.White);
-            
-            fullHudConsole.Print(0, 2, "", ColorAnsi.CyanBright);
-            fullHudConsole.Print(0, 3, "", ColorAnsi.CyanBright);
-            fullHudConsole.Print(0, 4, "", ColorAnsi.CyanBright);
+            FullHudConsole.Print(GetXForCenterText(welcome), 1, welcome, ColorAnsi.White);
 
-            for (int i = 0; i < menuList.Length; i++)
+            FullHudConsole.Print(0, 2, "", ColorAnsi.CyanBright);
+            FullHudConsole.Print(0, 3, "", ColorAnsi.CyanBright);
+            FullHudConsole.Print(0, 4, "", ColorAnsi.CyanBright);
+
+            for (int i = 0; i < MenuList.Length; i++)
             {
-                var menuItem = menuList[i];
-                var menuText = "";
+                var menuItem = MenuList[i];
+                string menuText;
                 if (i == selectedMenuItem)
                 {
                     menuText = "--- " + menuItem + " ---";
@@ -378,66 +315,190 @@ namespace GameJamSadConsoleSample
                     menuText = menuItem;
                 }
 
-                fullHudConsole.Print(GetXForText(menuText), i + 7, menuText, ColorAnsi.Magenta);
+                FullHudConsole.Print(GetXForCenterText(menuText), i + 7, menuText, ColorAnsi.Magenta);
             }
         }
 
         private static void RenderHowToPlay()
         {
             var howToPlay = "How to play A Lonely Poet's Quest";
-            fullHudConsole.Print(GetXForText(howToPlay), 1, howToPlay, ColorAnsi.White);
+            FullHudConsole.Print(GetXForCenterText(howToPlay), 1, howToPlay, ColorAnsi.White);
 
-            for (int i = 0; i < howToPlayList.Length; i++)
+            for (int i = 0; i < HowToPlayList.Length; i++)
             {
-                var howText = howToPlayList[i];
-                fullHudConsole.Print(10, i + 10, howText, ColorAnsi.CyanBright);
+                var howText = HowToPlayList[i];
+                FullHudConsole.Print(10, i + 10, howText, ColorAnsi.CyanBright);
             }
 
             var ok = "--- OK ---";
-            fullHudConsole.Print(GetXForText(ok), 10 + howToPlayList.Length + 2, ok, ColorAnsi.Magenta);
+            FullHudConsole.Print(GetXForCenterText(ok), 10 + HowToPlayList.Length + 2, ok, ColorAnsi.Magenta);
         }
-
-        #endregion
 
         private static void RenderIntro()
         {
             for (int i = 0; i < intro.intro[introSteps].Count; i++)
             {
                 var line = intro.intro[introSteps][i];
-                fullHudConsole.Print(2, i, line, ColorAnsi.CyanBright);
+                FullHudConsole.Print(2, i, line, ColorAnsi.CyanBright);
             }
         }
 
         private static void RenderGameOver()
         {
-            for (int i = 0; i < _endGame.gameOver.Count; i++)
+            for (int i = 0; i < endGame.gameOver.Count; i++)
             {
-                var line = _endGame.gameOver[i];
-                fullHudConsole.Print(GetXForText(line), i, line, ColorAnsi.CyanBright);
+                var line = endGame.gameOver[i];
+                FullHudConsole.Print(GetXForCenterText(line), i, line, ColorAnsi.CyanBright);
             }
 
             var text = "-- You ran out of batteries -- ";
-            fullHudConsole.Print(GetXForText(text), _endGame.gameOver.Count, text, ColorAnsi.CyanBright);
+            FullHudConsole.Print(GetXForCenterText(text), endGame.gameOver.Count, text, ColorAnsi.CyanBright);
+            var text2 = "-- This is how long you survived: " + completedTime.Minutes.ToString("D2") + ":" +
+                        completedTime.Seconds.ToString("D2") + " --";
+            FullHudConsole.Print(GetXForCenterText(text2), endGame.gameOver.Count + 1, text2, ColorAnsi.CyanBright);
         }
 
         private static void RenderGameCompleted()
         {
-            for (int i = 0; i < _endGame.gameCompleted.Count; i++)
+            for (int i = 0; i < endGame.gameCompleted.Count; i++)
             {
-                var line = _endGame.gameCompleted[i];
-                fullHudConsole.Print(0, i, line, ColorAnsi.CyanBright);
+                var line = endGame.gameCompleted[i];
+                if (i >= 7 && i <= 14)
+                {
+                    FullHudConsole.Print(GetXForCenterText(line), i, line, ColorAnsi.RedBright);
+                }
+                else
+                {
+                    FullHudConsole.Print(GetXForCenterText(line), i, line, ColorAnsi.CyanBright);
+                }
             }
 
             var text = "-- Your final time was: " + completedTime.Minutes.ToString("D2") + ":" +
                        completedTime.Seconds.ToString("D2") + " -- ";
-            fullHudConsole.Print(GetXForText(text), _endGame.gameCompleted.Count, text, ColorAnsi.CyanBright);
+            FullHudConsole.Print(GetXForCenterText(text), endGame.gameCompleted.Count, text, ColorAnsi.CyanBright);
+            var text2 = "-- Now you can finally travel to Mars and meet up with your lover --";
+            FullHudConsole.Print(GetXForCenterText(text2), endGame.gameCompleted.Count + 1, text2,
+                ColorAnsi.CyanBright);
         }
+
+        #endregion
 
         #region Helpers
 
-        private static int GetXForText(string text)
+        private static int GetXForCenterText(string text)
         {
             return (Width / 2) - ((text.Length - 1) / 2);
+        }
+
+        private static void PrintItemForLine(string line, int lineNumber)
+        {
+            if (line.Contains("88"))
+            {
+                var pos = line.IndexOf("88", StringComparison.Ordinal);
+                GameConsole.Print(30 + pos, 4 + lineNumber, "88", ColorAnsi.Green);
+            }
+            else if (line.Contains("8"))
+            {
+                var pos = line.IndexOf("8", StringComparison.Ordinal);
+                GameConsole.Print(30 + pos, 4 + lineNumber, "8", ColorAnsi.Green);
+            }
+            
+            if (line.Contains("Ship"))
+            {
+                var pos = line.IndexOf("Ship", StringComparison.Ordinal);
+                GameConsole.Print(30 + pos, 4 + lineNumber, "Ship", ColorAnsi.BlueBright);
+            }
+
+            foreach (var item in map.itemLines)
+            {
+                foreach (var itemLine in item)
+                {
+                    if (line.Contains(itemLine))
+                    {
+                        var pos = line.IndexOf(itemLine, StringComparison.Ordinal);
+                        GameConsole.Print(30 + pos, 4 + lineNumber, itemLine, ColorAnsi.RedBright);
+                    }
+                }
+            }
+        }
+
+        private static void UpdatePlayerPositionIfPossible(Point newPlayerPosition)
+        {
+            var line = map.mapList[newPlayerPosition.Y - 1];
+            var stepChar = line[newPlayerPosition.X];
+
+            switch (stepChar)
+            {
+                case '|' or '#' or '=' or '@':
+                    return;
+                case '8':
+                    currentBattery = 4;
+                    break;
+                case 'S':
+                    if (ItemList.Count == 5)
+                    {
+                        completedTime = DateTime.Now - startOfGame;
+                        gameState = GameState.Victory;
+                    }
+
+                    break;
+                case '1':
+                    if (!ItemList.Contains("1"))
+                    {
+                        ItemList.Add("1");
+                        currentBattery += 2;
+                    }
+
+                    break;
+                case '2':
+                    if (!ItemList.Contains("2"))
+                    {
+                        ItemList.Add("2");
+                        currentBattery += 2;
+                    }
+
+                    break;
+                case '3':
+                    if (!ItemList.Contains("3"))
+                    {
+                        ItemList.Add("3");
+                        currentBattery += 2;
+                    }
+
+                    break;
+                case '4':
+                    if (!ItemList.Contains("4"))
+                    {
+                        ItemList.Add("4");
+                        currentBattery += 2;
+                    }
+
+                    break;
+                case '5':
+                    if (!ItemList.Contains("5"))
+                    {
+                        ItemList.Add("5");
+                        currentBattery += 2;
+                    }
+
+                    break;
+            }
+
+            if (currentBattery > 4)
+            {
+                currentBattery = 4;
+            }
+
+            playerMapPosition = newPlayerPosition;
+            steps++;
+        }
+
+        private static void ResetGame()
+        {
+            steps = 0;
+            currentBattery = 4;
+            ItemList.Clear();
+            introSteps = 0;
         }
 
         #endregion
